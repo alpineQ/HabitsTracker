@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -19,7 +19,7 @@ class HabitListFragment : Fragment() {
     private lateinit var habitRecyclerView: RecyclerView
     private var adapter: HabitAdapter? = null
     private val habitListViewModel: HabitListViewModel by lazy {
-        ViewModelProviders.of(this).get(HabitListViewModel::class.java)
+        ViewModelProvider(this).get(HabitListViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
