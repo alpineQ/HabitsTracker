@@ -1,5 +1,6 @@
 package com.alpineQ.habitstracker
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,15 +8,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.util.*
 
 private const val TAG = "HabitListFragment"
 
 class HabitListFragment : Fragment() {
+    interface Callbacks {
+        fun onHabitSelected(crimeId: UUID)
+    }
+
+    private var callbacks: Callbacks? = null
     private lateinit var habitRecyclerView: RecyclerView
     private var adapter: HabitAdapter? = null
     private val habitListViewModel: HabitListViewModel by lazy {
@@ -25,6 +31,11 @@ class HabitListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "Total habits:${habitListViewModel.habits.size}")
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callbacks = context as Callbacks?
     }
 
     override fun onCreateView(
@@ -37,6 +48,11 @@ class HabitListFragment : Fragment() {
         habitRecyclerView.layoutManager = LinearLayoutManager(context)
         updateUI()
         return view
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
     }
 
     private fun updateUI() {
@@ -70,7 +86,7 @@ class HabitListFragment : Fragment() {
             }
         }
         override fun onClick(v: View) {
-            Toast.makeText(context, "${habit.title} pressed!", Toast.LENGTH_SHORT).show()
+            callbacks?.onHabitSelected(habit.id)
         }
     }
 
