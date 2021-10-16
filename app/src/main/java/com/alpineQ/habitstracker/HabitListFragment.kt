@@ -18,7 +18,7 @@ private const val TAG = "HabitListFragment"
 
 class HabitListFragment : Fragment() {
     interface Callbacks {
-        fun onHabitSelected(crimeId: UUID)
+        fun onHabitSelected(habitID: UUID)
     }
 
     private var callbacks: Callbacks? = null

@@ -15,10 +15,8 @@ class HabitRepository private constructor(context: Context) {
             DATABASE_NAME
         ).build()
     private val habitDao = database.habitDao()
-    fun getHabits(): List<Habit> =
-        habitDao.getHabits()
-    fun getHabit(id: UUID): Habit? =
-        habitDao.getHabit(id)
+    fun getHabits(): List<Habit> = habitDao.getHabits()
+    fun getHabit(id: UUID): Habit? = habitDao.getHabit(id)
     companion object {
         private var INSTANCE: HabitRepository? = null
         fun initialize(context: Context) {

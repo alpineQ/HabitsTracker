@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity(), HabitListFragment.Callbacks {
                 .commit()
         }
     }
-    override fun onHabitSelected(crimeId: UUID) {
+    override fun onHabitSelected(habitID: UUID) {
         val fragment = HabitFragment()
         supportFragmentManager
             .beginTransaction()
