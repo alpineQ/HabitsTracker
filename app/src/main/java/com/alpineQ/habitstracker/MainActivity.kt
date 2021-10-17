@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity(), HabitListFragment.Callbacks {
         }
     }
     override fun onHabitSelected(habitID: UUID) {
-        val fragment = HabitFragment()
+        val fragment = HabitFragment.newInstance(habitID)
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment_container, fragment)
