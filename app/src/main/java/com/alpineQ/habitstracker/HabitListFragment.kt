@@ -3,9 +3,7 @@ package com.alpineQ.habitstracker
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -23,14 +21,14 @@ class HabitListFragment : Fragment() {
 
     private var callbacks: Callbacks? = null
     private lateinit var habitRecyclerView: RecyclerView
-    private var adapter: HabitAdapter? = null
+    private var adapter: HabitAdapter? = HabitAdapter(emptyList())
     private val habitListViewModel: HabitListViewModel by lazy {
         ViewModelProvider(this).get(HabitListViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "Total habits:${habitListViewModel.habits.size}")
+        setHasOptionsMenu(true)
     }
 
     override fun onAttach(context: Context) {
@@ -46,8 +44,20 @@ class HabitListFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_habit_list, container, false)
         habitRecyclerView = view.findViewById(R.id.habit_recycler_view) as RecyclerView
         habitRecyclerView.layoutManager = LinearLayoutManager(context)
-        updateUI()
+        habitRecyclerView.adapter = adapter
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        habitListViewModel.habitListLiveData.observe(
+            viewLifecycleOwner,
+            { habits ->
+                habits?.let {
+                    Log.i(TAG, "Got habits ${habits.size}")
+                    updateUI(habits)
+                }
+            })
     }
 
     override fun onDetach() {
@@ -55,8 +65,24 @@ class HabitListFragment : Fragment() {
         callbacks = null
     }
 
-    private fun updateUI() {
-        val habits = habitListViewModel.habits
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_habit_list, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.new_habit -> {
+                val habit = Habit()
+                habitListViewModel.addHabit(habit)
+                callbacks?.onHabitSelected(habit.id)
+                true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun updateUI(habits: List<Habit>) {
         adapter = HabitAdapter(habits)
         habitRecyclerView.adapter = adapter
     }
