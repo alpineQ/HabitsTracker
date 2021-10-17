@@ -7,4 +7,5 @@
     <string name="habit_daily_done">Habit done today?</string>
     <string name="new_habit">New Habit</string>
     <string name="add_new_habit">Add new habit</string>
+    <string name="habit_date">Habit Date</string>
 </resources>
