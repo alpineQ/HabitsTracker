@@ -30,6 +30,8 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         habit = Habit()
+        val crimeId: UUID = arguments?.getSerializable(ARG_HABIT_ID) as UUID
+        habitDetailViewModel.loadHabit(crimeId)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -62,7 +64,7 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
                 count: Int,
                 after: Int
             ) {
-                // Это пространство оставлено пустым специально
+
             }
 
             override fun onTextChanged(
@@ -75,7 +77,7 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
             }
 
             override fun afterTextChanged(sequence: Editable?) {
-                    // И это
+
             }
         }
         titleField.addTextChangedListener(titleWatcher)
@@ -102,7 +104,6 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
         }
 
     }
-
 
     private fun updateUI() {
         titleField.setText(habit.title)

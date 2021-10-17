@@ -3,11 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="../../../../layout/custom_preview.xml" value="0.36302083333333335" />
-        <entry key="..\:/Users/S17409/AndroidStudioProjects/HabitsTracker/app/src/main/res/layout/activity_main.xml" value="0.2957427536231884" />
-        <entry key="..\:/Users/S17409/AndroidStudioProjects/HabitsTracker/app/src/main/res/layout/fragment_habit.xml" value="0.28940217391304346" />
-        <entry key="..\:/Users/S17409/AndroidStudioProjects/HabitsTracker/app/src/main/res/layout/fragment_habit_list.xml" value="0.24739583333333334" />
-        <entry key="..\:/Users/S17409/AndroidStudioProjects/HabitsTracker/app/src/main/res/layout/list_item_habit.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.27853260869565216" />
+        <entry key="app/src/main/res/layout/fragment_habit.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_habit_list.xml" value="0.34791666666666665" />
+        <entry key="app/src/main/res/layout/list_item_habit.xml" value="0.34791666666666665" />
+        <entry key="app/src/main/res/menu/fragment_habit_list.xml" value="0.34791666666666665" />
       </map>
     </option>
   </component>
