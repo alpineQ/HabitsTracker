@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
 import androidx.lifecycle.ViewModelProvider
+import java.text.SimpleDateFormat
 import java.util.*
 
 private const val TAG = "HabitFragment"
@@ -108,7 +109,7 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
 
     private fun updateUI() {
         titleField.setText(habit.title)
-        dateButton.text = habit.date.toString()
+        dateButton.text = SimpleDateFormat("dd MMMM, yyyy", Locale.UK).format(habit.date)
         dailyDoneCheckBox.apply {
             isChecked = habit.dailyDone
             jumpDrawablesToCurrentState()

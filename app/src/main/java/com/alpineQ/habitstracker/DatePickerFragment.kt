@@ -21,7 +21,6 @@ class DatePickerFragment : DialogFragment() {
                 _: DatePicker, year: Int, month: Int, day: Int ->
             val resultDate: Date = GregorianCalendar(year, month, day).time
 
-            // create our result Bundle
             val result = Bundle().apply {
                 putSerializable(RESULT_DATE_KEY, resultDate)
             }

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
 import java.util.*
 
 private const val TAG = "HabitListFragment"
@@ -120,7 +121,7 @@ class HabitListFragment : Fragment() {
         fun bind(habit: Habit) {
             this.habit = habit
             titleTextView.text = this.habit.title
-            dateTextView.text = this.habit.date.toString()
+            dateTextView.text = SimpleDateFormat("dd MMMM, yyyy", Locale.UK).format(this.habit.date)
             solvedImageView.visibility = if (habit.dailyDone) {
                 View.VISIBLE
             } else {

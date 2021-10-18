@@ -11,14 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/habit_title_label"/>
+
     <EditText
         android:id="@+id/habit_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/default_title_hint"
-        android:minHeight="48dp"
         android:autofillHints="Title"
-        android:inputType="textShortMessage" />
+        android:hint="@string/default_title_hint"
+        android:textColorHint="#757575"
+        android:inputType="textShortMessage"
+        android:minHeight="48dp" />
     <TextView
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
