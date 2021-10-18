@@ -2,6 +2,7 @@ package com.alpineQ.habitstracker
 
 import android.content.Context
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.*
 import android.widget.Button
@@ -11,10 +12,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.text.SimpleDateFormat
 import java.util.*
 
 private const val TAG = "HabitListFragment"
+private const val DATE_FORMAT = "dd MMMM, yyyy"
 
 class HabitListFragment : Fragment() {
     interface Callbacks {
@@ -121,7 +122,7 @@ class HabitListFragment : Fragment() {
         fun bind(habit: Habit) {
             this.habit = habit
             titleTextView.text = this.habit.title
-            dateTextView.text = SimpleDateFormat("dd MMMM, yyyy", Locale.UK).format(this.habit.date)
+            dateTextView.text = DateFormat.format(DATE_FORMAT, habit.date)
             solvedImageView.visibility = if (habit.dailyDone) {
                 View.VISIBLE
             } else {

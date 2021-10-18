@@ -30,10 +30,20 @@
         android:id="@+id/habit_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Wed Nov 14 11:56 EST 2018"/>
+        tools:text="@string/example_habit_date"/>
     <CheckBox
         android:id="@+id/habit_daily_done"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/habit_daily_done"/>
+    <Button
+        android:id="@+id/habit_partner_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/habit_partner_text"/>
+    <Button
+        android:id="@+id/share_progress_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/share_progress_text"/>
 </LinearLayout>

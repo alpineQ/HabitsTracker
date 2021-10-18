@@ -9,4 +9,5 @@ import java.util.Date
 data class Habit(@PrimaryKey val id: UUID = UUID.randomUUID(),
                  var title: String = "",
                  var date: Date = Date(),
-                 var dailyDone: Boolean = false)
+                 var dailyDone: Boolean = false,
+                 var partner: String = "")

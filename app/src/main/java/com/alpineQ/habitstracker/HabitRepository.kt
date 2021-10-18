@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.alpineQ.habitstracker.database.HabitDatabase
+import com.alpineQ.habitstracker.database.migration_1_2
 import java.util.*
 import java.util.concurrent.Executors
 
@@ -15,7 +16,8 @@ class HabitRepository private constructor(context: Context) {
             context.applicationContext,
             HabitDatabase::class.java,
             DATABASE_NAME
-        ).build()
+        ).addMigrations(migration_1_2)
+            .build()
     private val habitDao = database.habitDao()
     private val executor = Executors.newSingleThreadExecutor()
     fun getHabits(): LiveData<List<Habit>> = habitDao.getHabits()
