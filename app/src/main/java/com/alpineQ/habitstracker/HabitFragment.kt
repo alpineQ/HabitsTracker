@@ -28,7 +28,6 @@ import java.util.*
 private const val TAG = "HabitFragment"
 private const val ARG_HABIT_ID = "habit_id"
 private const val REQUEST_DATE = "DialogDate"
-private const val REQUEST_CONTACT = 0
 private const val DATE_FORMAT = "dd MMMM, yyyy"
 
 
@@ -56,17 +55,53 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
                 Log.d(TAG, "createIntent() called")
                 return Intent(Intent.ACTION_PICK, input)
             }
+
             override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
                 Log.d(TAG, "parseResult() called")
-                if(resultCode != Activity.RESULT_OK || intent == null)
+                if (resultCode != Activity.RESULT_OK || intent == null)
                     return null
                 return intent.data
             }
         }
 
+        pickContactContract = object : ActivityResultContract<Uri, Uri?>() {
+            override fun createIntent(context: Context, input: Uri): Intent {
+                Log.d(TAG, "createIntent() called")
+                return Intent(Intent.ACTION_PICK, input)
+            }
+
+            override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+                Log.d(TAG, "parseResult() called")
+                if (resultCode != Activity.RESULT_OK || intent == null)
+                    return null
+                return intent.data
+            }
+        }
+        pickContactCallback = ActivityResultCallback<Uri?> { contactUri: Uri? ->
+            Log.d(TAG, "onActivityResult() called with result: $contactUri")
+            val queryFields = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
+            val cursor = contactUri?.let {
+                requireActivity().contentResolver.query(it, queryFields, null, null, null)
+            }
+            cursor?.use {
+                if (it.count == 0) {
+                    return@ActivityResultCallback
+                }
+                it.moveToFirst()
+                val suspect = it.getString(0)
+                habit.partner = suspect
+                habitDetailViewModel.saveHabit(habit)
+                partnerButton.text = suspect
+            }
+        }
+        pickContactLauncher = registerForActivityResult(pickContactContract, pickContactCallback)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_habit, container, false)
         titleField = view.findViewById(R.id.habit_title) as EditText
         dateButton = view.findViewById(R.id.habit_date) as Button
@@ -131,28 +166,23 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
                 putExtra(Intent.EXTRA_TEXT, getHabitReport())
                 putExtra(
                     Intent.EXTRA_SUBJECT,
-                    getString(R.string.habit_report_subject))
+                    getString(R.string.habit_report_subject)
+                )
             }.also { intent ->
-                val chooserIntent =
-                    Intent.createChooser(intent, getString(R.string.send_report))
+                val chooserIntent = Intent.createChooser(intent, getString(R.string.send_report))
                 startActivity(chooserIntent)
             }
         }
 
-//        partnerButton.apply {
-//            setOnClickListener {
-//                val pickContactIntent =
-//                    Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
-//                setOnClickListener {
-//                    startActivityForResult(pickContactIntent, REQUEST_CONTACT)
-//
-//            }
-//            }
-//        }
+        partnerButton.apply {
+            setOnClickListener {
+                pickContactLauncher.launch(ContactsContract.Contacts.CONTENT_URI)
+            }
+        }
     }
 
     override fun onFragmentResult(requestCode: String, result: Bundle) {
-        when(requestCode) {
+        when (requestCode) {
             REQUEST_DATE -> {
                 Log.d(TAG, "received result for $requestCode")
                 habit.date = DatePickerFragment.getSelectedDate(result)
@@ -169,6 +199,9 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
             isChecked = habit.dailyDone
             jumpDrawablesToCurrentState()
         }
+        if (habit.partner.isNotEmpty()) {
+            partnerButton.text = habit.partner
+        }
     }
 
     private fun getHabitReport(): String {
@@ -183,8 +216,10 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
         } else {
             getString(R.string.habit_report_partner, habit.partner)
         }
-        return getString(R.string.habit_report,
-            habit.title, dateString, solvedString, partner)
+        return getString(
+            R.string.habit_report,
+            habit.title, dateString, solvedString, partner
+        )
     }
 
     companion object {
