@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
 import androidx.lifecycle.ViewModelProvider
@@ -127,6 +128,7 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
 
     override fun onStop() {
         super.onStop()
+        Toast.makeText(context, "${habit.title} created!", Toast.LENGTH_SHORT).show()
         habitDetailViewModel.saveHabit(habit)
     }
 
