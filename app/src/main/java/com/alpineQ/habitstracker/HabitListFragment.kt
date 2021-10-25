@@ -3,7 +3,6 @@ package com.alpineQ.habitstracker
 import android.content.Context
 import android.os.Bundle
 import android.text.format.DateFormat
-import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.ImageView
@@ -71,7 +70,6 @@ class HabitListFragment : Fragment() {
         habitListViewModel.habitListLiveData.observe(viewLifecycleOwner,
             { habits ->
                 habits?.let {
-                    Log.i(TAG, "Got habits ${habits.size}")
                     updateUI(habits)
                 }
             })
