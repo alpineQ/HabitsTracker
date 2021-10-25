@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
 
 private const val TAG = "HabitListFragment"
@@ -24,7 +25,8 @@ class HabitListFragment : Fragment() {
 
     private var callbacks: Callbacks? = null
     private lateinit var habitRecyclerView: RecyclerView
-    private lateinit var addNewHabitButton: Button
+    private lateinit var addFirstHabitButton: Button
+    private lateinit var addNewHabitButton: FloatingActionButton
     private var adapter: HabitAdapter? = HabitAdapter(emptyList())
     private val habitListViewModel: HabitListViewModel by lazy {
         ViewModelProvider(this).get(HabitListViewModel::class.java)
@@ -47,7 +49,13 @@ class HabitListFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_habit_list, container, false)
         habitRecyclerView = view.findViewById(R.id.habit_recycler_view) as RecyclerView
-        addNewHabitButton = view.findViewById(R.id.add_new_habit_button) as Button
+        addFirstHabitButton = view.findViewById(R.id.add_first_habit_button) as Button
+        addFirstHabitButton.setOnClickListener {
+            val habit = Habit()
+            habitListViewModel.addHabit(habit)
+            callbacks?.onHabitSelected(habit.id)
+        }
+        addNewHabitButton = view.findViewById(R.id.new_habit_fab) as FloatingActionButton
         addNewHabitButton.setOnClickListener {
             val habit = Habit()
             habitListViewModel.addHabit(habit)
@@ -79,24 +87,12 @@ class HabitListFragment : Fragment() {
         inflater.inflate(R.menu.fragment_habit_list, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.new_habit -> {
-                val habit = Habit()
-                habitListViewModel.addHabit(habit)
-                callbacks?.onHabitSelected(habit.id)
-                true
-            }
-            else -> return super.onOptionsItemSelected(item)
-        }
-    }
-
     private fun updateUI(habits: List<Habit>) {
         if (habits.isEmpty()) {
-            addNewHabitButton.visibility = View.VISIBLE
+            addFirstHabitButton.visibility = View.VISIBLE
         }
         else {
-            addNewHabitButton.visibility = View.INVISIBLE
+            addFirstHabitButton.visibility = View.INVISIBLE
         }
     adapter = HabitAdapter(habits)
         habitRecyclerView.adapter = adapter

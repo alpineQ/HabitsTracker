@@ -1,21 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/habit_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <Button
-        android:id="@+id/add_new_habit_button"
+        android:id="@+id/add_first_habit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:visibility="invisible"
-        android:drawableLeft="@android:drawable/ic_menu_add"
-        android:text="@string/add_new_habit"
-        tools:ignore="RtlHardcoded" />
+        android:layout_gravity="center"
+        android:drawableStart="@android:drawable/ic_menu_add"
+        android:text="@string/add_new_habit" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/new_habit_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/purple_200"
+        app:backgroundTint="@color/purple_200"
+        android:contentDescription="@string/add_new_habit"
+        app:srcCompat="@drawable/ic_drawable_add"/>
 
-</RelativeLayout>
+</FrameLayout>
