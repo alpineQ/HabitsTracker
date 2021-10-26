@@ -11,10 +11,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 private const val TAG = "HabitListFragment"
+private const val POLL_WORK = "POLL_WORK"
 private const val DATE_FORMAT = "dd MMMM, yyyy"
 
 class HabitListFragment : Fragment() {
@@ -34,6 +37,11 @@ class HabitListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        val workRequest = OneTimeWorkRequest
+            .Builder(PollWorker::class.java)
+            .build()
+
+        context?.let { WorkManager.getInstance(it).enqueue(workRequest) }
     }
 
     override fun onAttach(context: Context) {
@@ -68,11 +76,7 @@ class HabitListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         habitListViewModel.habitListLiveData.observe(viewLifecycleOwner,
-            { habits ->
-                habits?.let {
-                    updateUI(habits)
-                }
-            })
+            { habits -> habits?.let { updateUI(habits) } })
     }
 
     override fun onDetach() {
@@ -83,6 +87,42 @@ class HabitListFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.fragment_habit_list, menu)
+        val toggleItem = menu.findItem(R.id.menu_item_toggle_polling)
+        val isPolling = PollWorker.isPolling(requireContext())
+        val toggleItemTitle = if (isPolling) {
+            R.string.stop_polling
+        } else {
+            R.string.start_polling
+        }
+        toggleItem.setTitle(toggleItemTitle)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) : Boolean {
+        return when (item.itemId) {
+            R.id.menu_item_toggle_polling -> {
+                val isPolling = PollWorker.isPolling(requireContext())
+                if (isPolling) {
+                    WorkManager.getInstance(requireContext()).cancelUniqueWork(POLL_WORK)
+                    PollWorker.setPolling(requireContext(), false)
+
+                } else {
+                    val constraints = Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.UNMETERED)
+                        .build()
+                    val periodicRequest = PeriodicWorkRequest
+                            .Builder(PollWorker::class.java, 15, TimeUnit.MINUTES)
+                            .setConstraints(constraints)
+                            .build()
+                    WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(POLL_WORK,
+                        ExistingPeriodicWorkPolicy.KEEP,
+                        periodicRequest
+                    )
+                    PollWorker.setPolling(requireContext(), true)
+                }
+                activity?.invalidateOptionsMenu()
+                return true
+            } else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun updateUI(habits: List<Habit>) {

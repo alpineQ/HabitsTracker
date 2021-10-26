@@ -1,6 +1,8 @@
 package com.alpineQ.habitstracker
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import java.util.*
@@ -29,5 +31,10 @@ class MainActivity : AppCompatActivity(), HabitListFragment.Callbacks {
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
+    }
+    companion object {
+        fun newIntent(context: Context): Intent {
+            return Intent(context, MainActivity::class.java)
+        }
     }
 }
