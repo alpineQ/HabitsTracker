@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Трекер полезных привычек</string>
+    <string name="default_title_hint">Введите название привычки</string>
+    <string name="habit_title_label">Заголовок</string>
+    <string name="habit_details_label">Детали</string>
+    <string name="habit_daily_done">Привычка выполняется каждый день?</string>
+    <string name="new_habit">Новая привычка</string>
+    <string name="add_new_habit">Добавить новую привычку</string>
+    <string name="habit_date">Дата привычки</string>
+    <string name="channel_name">Уведомление о новой привычке</string>
+    <string name="channel_description">Новая привычка!</string>
+    <string name="example_habit_date">18 Октября, 2021</string>
+    <string name="habit_partner_text">Выберите партнера по привычке</string>
+    <string name="share_progress_text">Поделиться успехами</string>
+    <string name="habit_report">%1$s! Привычка начата %2$s. %3$s, и %4$s</string>
+    <string name="progress_report_success">Привычка успешно выполняется</string>
+    <string name="progress_report_failure">выполнение привычки было провалено</string>
+    <string name="habit_report_no_partner">отсутствует партнер по привычке.</string>
+    <string name="habit_report_partner">партнер по привычке %s.</string>
+    <string name="habit_report_subject">Отчет Трекера полезных привычек</string>
+    <string name="send_report">Послать отчет о привычке при помощи</string>
+</resources>

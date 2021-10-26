@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Habits Tracker</string>
-    <string name="question_text">Which habit will we track?</string>
     <string name="default_title_hint">Enter a title for the habit.</string>
     <string name="habit_title_label">Title</string>
     <string name="habit_details_label">Details</string>
