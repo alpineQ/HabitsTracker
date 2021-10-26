@@ -43,7 +43,8 @@ class PollWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
                 notificationManager.notify(0, notificationBuilder.build())
                 sleep(100)
             }
-
+            notificationBuilder.setOngoing(false)
+            notificationManager.notify(0, notificationBuilder.build())
         } else {
             Toast.makeText(applicationContext, R.string.long_proccess_title, Toast.LENGTH_SHORT).show()
         }
