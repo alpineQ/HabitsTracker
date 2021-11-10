@@ -10,4 +10,7 @@ data class Habit(@PrimaryKey val id: UUID = UUID.randomUUID(),
                  var title: String = "",
                  var date: Date = Date(),
                  var dailyDone: Boolean = false,
-                 var partner: String = "")
+                 var partner: String = "") {
+    val photoFileName
+        get() = "IMG_$id.jpg"
+}

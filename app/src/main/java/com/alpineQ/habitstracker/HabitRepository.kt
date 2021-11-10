@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.alpineQ.habitstracker.database.HabitDatabase
 import com.alpineQ.habitstracker.database.migration_1_2
+import java.io.File
 import java.util.*
 import java.util.concurrent.Executors
 
@@ -20,6 +21,7 @@ class HabitRepository private constructor(context: Context) {
             .build()
     private val habitDao = database.habitDao()
     private val executor = Executors.newSingleThreadExecutor()
+    private val filesDir = context.applicationContext.filesDir
     fun getHabits(): LiveData<List<Habit>> = habitDao.getHabits()
     fun getHabit(id: UUID): LiveData<Habit?> = habitDao.getHabit(id)
     fun updateHabit(habit: Habit) {
@@ -32,6 +34,7 @@ class HabitRepository private constructor(context: Context) {
             habitDao.addHabit(habit)
         }
     }
+    fun getPhotoFile(habit: Habit): File = File(filesDir, habit.photoFileName)
     companion object {
         private var INSTANCE: HabitRepository? = null
         fun initialize(context: Context) {
