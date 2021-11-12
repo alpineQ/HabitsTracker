@@ -23,7 +23,12 @@ class PollWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
         val intent = MainActivity.newIntent(applicationContext)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val pendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            val pendingIntent = PendingIntent.getActivity(
+                applicationContext,
+                0,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE
+            )
             val resources = applicationContext.resources
             val notificationManager = NotificationManagerCompat.from(applicationContext)
             val notificationBuilder = NotificationCompat
@@ -46,7 +51,8 @@ class PollWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
             notificationBuilder.setOngoing(false)
             notificationManager.notify(0, notificationBuilder.build())
         } else {
-            Toast.makeText(applicationContext, R.string.long_proccess_title, Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, R.string.long_proccess_title, Toast.LENGTH_SHORT)
+                .show()
         }
         return Result.success()
     }

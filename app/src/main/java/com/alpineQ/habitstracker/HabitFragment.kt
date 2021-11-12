@@ -3,8 +3,7 @@ package com.alpineQ.habitstracker
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -20,6 +19,7 @@ import android.widget.*
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.annotation.CallSuper
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
@@ -47,12 +47,7 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
     private val habitDetailViewModel: HabitDetailViewModel by lazy {
         ViewModelProvider(this).get(HabitDetailViewModel::class.java)
     }
-    private lateinit var pickContactContract: ActivityResultContract<Uri, Uri?>
-    private lateinit var pickContactCallback: ActivityResultCallback<Uri?>
     private lateinit var pickContactLauncher: ActivityResultLauncher<Uri>
-
-    private lateinit var takePhotoContract: ActivityResultContract<Uri, Uri?>
-    private lateinit var takePhotoCallback: ActivityResultCallback<Uri?>
     private lateinit var takePhotoLauncher: ActivityResultLauncher<Uri>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,82 +55,61 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
         habit = Habit()
         val habitId: UUID = arguments?.getSerializable(ARG_HABIT_ID) as UUID
         habitDetailViewModel.loadHabit(habitId)
-        pickContactContract = object : ActivityResultContract<Uri, Uri?>() {
-            override fun createIntent(context: Context, input: Uri): Intent {
-                return Intent(Intent.ACTION_PICK, input)
-            }
 
-            override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
-                if (resultCode != Activity.RESULT_OK || intent == null)
-                    return null
-                return intent.data
-            }
-        }
-
-        pickContactCallback = ActivityResultCallback<Uri?> { contactUri: Uri? ->
-            Log.d(TAG, "onActivityResult() called with result: $contactUri")
-            val queryFields = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
-            val cursor = contactUri?.let {
-                requireActivity().contentResolver.query(it, queryFields, null, null, null)
-            }
-            cursor?.use {
-                if (it.count == 0) {
-                    return@ActivityResultCallback
+        pickContactLauncher =
+            registerForActivityResult(object : ActivityResultContract<Uri, Uri?>() {
+                override fun createIntent(context: Context, input: Uri): Intent {
+                    return Intent(Intent.ACTION_PICK, input)
                 }
-                it.moveToFirst()
-                val suspect = it.getString(0)
-                habit.partner = suspect
-                habitDetailViewModel.saveHabit(habit)
-                partnerButton.text = suspect
+
+                override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+                    if (resultCode != Activity.RESULT_OK || intent == null)
+                        return null
+                    return intent.data
+                }
+            }, ActivityResultCallback<Uri?> { contactUri: Uri? ->
+                Log.d(TAG, "onActivityResult() called with result: $contactUri")
+                val queryFields = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
+                val cursor = contactUri?.let {
+                    requireActivity().contentResolver.query(it, queryFields, null, null, null)
+                }
+                cursor?.use {
+                    if (it.count == 0) {
+                        return@ActivityResultCallback
+                    }
+                    it.moveToFirst()
+                    val suspect = it.getString(0)
+                    habit.partner = suspect
+                    habitDetailViewModel.saveHabit(habit)
+                    partnerButton.text = suspect
+                }
+            })
+
+
+        takePhotoLauncher =
+            registerForActivityResult(object : ActivityResultContract<Uri, Bitmap?>() {
+                @CallSuper
+                override fun createIntent(context: Context, input: Uri?): Intent {
+                    return Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        .putExtra(MediaStore.EXTRA_OUTPUT, input)
+                }
+
+                override fun parseResult(resultCode: Int, intent: Intent?): Bitmap? {
+                    if (resultCode != Activity.RESULT_OK || intent == null)
+                        return null
+                    return intent.getParcelableExtra("data")
+                }
+            }) { photo: Bitmap? ->
+                Log.d(TAG, "onActivityResult() called with result: $photo")
+                updatePhotoView()
             }
-        }
-        pickContactLauncher = registerForActivityResult(pickContactContract, pickContactCallback)
+    }
 
-
-        takePhotoContract = object : ActivityResultContract<Uri, Uri?>() {
-            override fun createIntent(context: Context, input: Uri): Intent {
-                return Intent(MediaStore.ACTION_IMAGE_CAPTURE, input)
-            }
-
-            override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
-                if (resultCode != Activity.RESULT_OK || intent == null)
-                    return null
-                return intent.data
-            }
-        }
-
-        pickContactCallback = ActivityResultCallback<Uri?> { photoUri: Uri? ->
-            Log.d(TAG, "onActivityResult() called with result: $photoUri")
-        }
-        takePhotoLauncher = registerForActivityResult(takePhotoContract, takePhotoCallback)
-
-//        val packageManager: PackageManager = requireActivity().packageManager
-//        val resolvedActivity: ResolveInfo? = packageManager.resolveActivity(captureImage,
-//            PackageManager.MATCH_DEFAULT_ONLY)
-//        if (resolvedActivity == null) {
-//            isEnabled = true
-//        }
-//        setOnClickListener {
-//            captureImage.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-//
-//            val cameraActivities: List<ResolveInfo> =
-//                packageManager.queryIntentActivities(captureImage,
-//                    PackageManager.MATCH_DEFAULT_ONLY)
-//            for (cameraActivity in cameraActivities) {
-//                requireActivity().grantUriPermission(
-//                    cameraActivity.activityInfo.packageName,
-//                    photoUri,
-//                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-//                )
-//            }
-
-        }
-
-        override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-        ): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_habit, container, false)
         titleField = view.findViewById(R.id.habit_title) as EditText
         dateButton = view.findViewById(R.id.habit_date) as Button
@@ -156,9 +130,11 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
                 habit?.let {
                     this.habit = habit
                     photoFile = habitDetailViewModel.getPhotoFile(habit)
-                    photoUri = FileProvider.getUriForFile(requireActivity(),
-                        "com.alpineQ.habitstracker.fileprovider",
-                        photoFile)
+                    photoUri = FileProvider.getUriForFile(
+                        requireActivity(),
+                        "${BuildConfig.APPLICATION_ID}.fileprovider",
+                        photoFile
+                    )
                     updateUI()
                 }
             })
@@ -216,6 +192,9 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
             }
         }
         photoButton.apply {
+            setOnClickListener {
+                takePhotoLauncher.launch(photoUri)
+            }
         }
     }
 
@@ -239,6 +218,16 @@ class HabitFragment : Fragment(), FragmentResultListener, DatePickerFragment.Cal
         }
         if (habit.partner.isNotEmpty()) {
             partnerButton.text = habit.partner
+        }
+        updatePhotoView()
+    }
+
+    private fun updatePhotoView() {
+        if (photoFile.exists()) {
+            val bitmap = getScaledBitmap(photoFile.path, requireActivity())
+            photoView.setImageBitmap(bitmap)
+        } else {
+            photoView.setImageDrawable(null)
         }
     }
 
