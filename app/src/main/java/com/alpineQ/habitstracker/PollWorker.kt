@@ -8,13 +8,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.edit
-import androidx.preference.PreferenceManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 
 private const val TAG = "PollWorker"
-private const val PREF_IS_POLLING = "isPolling"
 
 class PollWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
 
@@ -55,18 +52,5 @@ class PollWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
                 .show()
         }
         return Result.success()
-    }
-
-    companion object {
-        fun isPolling(context: Context): Boolean {
-            return PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(PREF_IS_POLLING, false)
-        }
-
-        fun setPolling(context: Context, isOn: Boolean) {
-            PreferenceManager.getDefaultSharedPreferences(context).edit {
-                putBoolean(PREF_IS_POLLING, isOn)
-            }
-        }
     }
 }

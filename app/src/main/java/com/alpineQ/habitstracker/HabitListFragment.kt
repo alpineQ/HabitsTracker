@@ -2,22 +2,26 @@ package com.alpineQ.habitstracker
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.text.format.DateFormat
-import android.view.*
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.work.*
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
-import java.util.concurrent.TimeUnit
 
-private const val TAG = "HabitListFragment"
-private const val POLL_WORK = "POLL_WORK"
 private const val DATE_FORMAT = "dd MMMM, yyyy"
 
 class HabitListFragment : Fragment() {
@@ -27,6 +31,8 @@ class HabitListFragment : Fragment() {
 
     private var callbacks: Callbacks? = null
     private lateinit var habitRecyclerView: RecyclerView
+    private lateinit var refreshLayout: SwipeRefreshLayout
+    private lateinit var habitDownloader: HabitDownloader
     private lateinit var addFirstHabitButton: Button
     private lateinit var addNewHabitButton: FloatingActionButton
     private var adapter: HabitAdapter? = HabitAdapter(emptyList())
@@ -42,6 +48,13 @@ class HabitListFragment : Fragment() {
             .build()
 
         context?.let { WorkManager.getInstance(it).enqueue(workRequest) }
+        val responseHandler = Handler()
+        habitDownloader =
+            HabitDownloader(responseHandler) { _, habit ->
+                Log.i("HabitListFragment", "Downloaded habit: ${habit.title}")
+                habitListViewModel.addHabit(habit)
+            }
+        lifecycle.addObserver(habitDownloader)
     }
 
     override fun onAttach(context: Context) {
@@ -56,6 +69,17 @@ class HabitListFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_habit_list, container, false)
         habitRecyclerView = view.findViewById(R.id.habit_recycler_view) as RecyclerView
+        refreshLayout = view.findViewById(R.id.swipe_refresh) as SwipeRefreshLayout
+        refreshLayout.setOnRefreshListener {
+            Toast.makeText(context, "Updating...", Toast.LENGTH_LONG).show()
+            val charPool = "abcdefghijklmnopqrstuvwxyz"
+            val randomString = (1..10)
+                .map { _ -> kotlin.random.Random.nextInt(0, charPool.length) }
+                .map(charPool::get)
+                .joinToString("")
+            habitDownloader.queueHabit(UUID.randomUUID(), randomString)
+            refreshLayout.isRefreshing = false
+        }
         addFirstHabitButton = view.findViewById(R.id.add_first_habit_button) as Button
         addFirstHabitButton.setOnClickListener {
             val habit = Habit()
@@ -84,45 +108,11 @@ class HabitListFragment : Fragment() {
         callbacks = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.fragment_habit_list, menu)
-        val toggleItem = menu.findItem(R.id.menu_item_toggle_polling)
-        val isPolling = PollWorker.isPolling(requireContext())
-        val toggleItemTitle = if (isPolling) {
-            R.string.stop_polling
-        } else {
-            R.string.start_polling
-        }
-        toggleItem.setTitle(toggleItemTitle)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) : Boolean {
-        return when (item.itemId) {
-            R.id.menu_item_toggle_polling -> {
-                val isPolling = PollWorker.isPolling(requireContext())
-                if (isPolling) {
-                    WorkManager.getInstance(requireContext()).cancelUniqueWork(POLL_WORK)
-                    PollWorker.setPolling(requireContext(), false)
-
-                } else {
-                    val constraints = Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.UNMETERED)
-                        .build()
-                    val periodicRequest = PeriodicWorkRequest
-                            .Builder(PollWorker::class.java, 15, TimeUnit.MINUTES)
-                            .setConstraints(constraints)
-                            .build()
-                    WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(POLL_WORK,
-                        ExistingPeriodicWorkPolicy.KEEP,
-                        periodicRequest
-                    )
-                    PollWorker.setPolling(requireContext(), true)
-                }
-                activity?.invalidateOptionsMenu()
-                return true
-            } else -> super.onOptionsItemSelected(item)
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        lifecycle.removeObserver(
+            habitDownloader
+        )
     }
 
     private fun updateUI(habits: List<Habit>) {

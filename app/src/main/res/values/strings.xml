@@ -3,7 +3,7 @@
     <string name="default_title_hint">Enter a title for the habit.</string>
     <string name="habit_title_label">Title</string>
     <string name="habit_details_label">Details</string>
-    <string name="habit_daily_done">Habit done today?</string>
+    <string name="habit_daily_done">Daily habit?</string>
     <string name="new_habit">New Habit</string>
     <string name="add_new_habit">Add new habit</string>
     <string name="habit_date">Habit Date</string>

@@ -4,7 +4,7 @@
     <string name="default_title_hint">Введите название привычки</string>
     <string name="habit_title_label">Заголовок</string>
     <string name="habit_details_label">Детали</string>
-    <string name="habit_daily_done">Привычка выполняется каждый день?</string>
+    <string name="habit_daily_done">Ежедневно?</string>
     <string name="new_habit">Новая привычка</string>
     <string name="add_new_habit">Добавить новую привычку</string>
     <string name="habit_date">Дата привычки</string>
