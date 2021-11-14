@@ -3,6 +3,7 @@ package com.alpineQ.habitstracker
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
@@ -48,7 +49,7 @@ class HabitListFragment : Fragment() {
             .build()
 
         context?.let { WorkManager.getInstance(it).enqueue(workRequest) }
-        val responseHandler = Handler()
+        val responseHandler = Handler(Looper.getMainLooper())
         habitDownloader =
             HabitDownloader(responseHandler) { _, habit ->
                 Log.i("HabitListFragment", "Downloaded habit: ${habit.title}")
@@ -118,9 +119,11 @@ class HabitListFragment : Fragment() {
     private fun updateUI(habits: List<Habit>) {
         if (habits.isEmpty()) {
             addFirstHabitButton.visibility = View.VISIBLE
+            addNewHabitButton.visibility = View.INVISIBLE
         }
         else {
             addFirstHabitButton.visibility = View.INVISIBLE
+            addNewHabitButton.visibility = View.VISIBLE
         }
     adapter = HabitAdapter(habits)
         habitRecyclerView.adapter = adapter
