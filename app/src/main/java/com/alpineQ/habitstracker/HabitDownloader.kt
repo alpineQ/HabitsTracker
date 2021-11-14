@@ -3,6 +3,7 @@ package com.alpineQ.habitstracker
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.HandlerThread
+import android.os.Looper
 import android.os.Message
 import android.util.Log
 import androidx.lifecycle.Lifecycle
@@ -24,7 +25,7 @@ class HabitDownloader(private val responseHandler: Handler,
     @Suppress("UNCHECKED_CAST")
     @SuppressLint("HandlerLeak")
     override fun onLooperPrepared() {
-        requestHandler = object : Handler() {
+        requestHandler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 if (msg.what == MESSAGE_DOWNLOAD) {
                     val target = msg.obj as UUID
