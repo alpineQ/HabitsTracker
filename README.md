@@ -5,3 +5,4 @@
 * [ЛР3](docs/LR3.docx)
 * [ЛР4](docs/LR4.docx)
 * [ЛР5](docs/LR5.docx)
+* [ЛР6](docs/LR6.docx)
