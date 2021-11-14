@@ -19,9 +19,9 @@
     <string name="habit_report_partner">the partner is %s.</string>
     <string name="habit_report_subject">Habits Tracker Report</string>
     <string name="send_report">Send habit report via</string>
-    <string name="notification_channel_name">Long process notification</string>
-    <string name="long_proccess_title">Really long process…</string>
-    <string name="long_proccess_text">longlonglong</string>
+    <string name="notification_channel_name">Habits sync notification</string>
+    <string name="long_proccess_title">Habits sync…</string>
+    <string name="long_proccess_text">Updating database</string>
     <string name="start_polling">Start polling</string>
     <string name="stop_polling">Stop polling</string>
     <string name="habit_image">Habit image</string>

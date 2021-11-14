@@ -20,9 +20,9 @@
     <string name="habit_report_partner">партнер по привычке %s.</string>
     <string name="habit_report_subject">Отчет Трекера полезных привычек</string>
     <string name="send_report">Послать отчет о привычке при помощи</string>
-    <string name="notification_channel_name">Уведомление с долгим процессом</string>
-    <string name="long_proccess_title">Очень долгий процес…</string>
-    <string name="long_proccess_text">Долгийдолгийдолгий</string>
+    <string name="notification_channel_name">Уведомление о синхронизации привычек</string>
+    <string name="long_proccess_title">Синхронизация привычек…</string>
+    <string name="long_proccess_text">Обновление базы данных</string>
     <string name="start_polling">Запустить фоновую работу</string>
     <string name="stop_polling">Остановить фоновую работу</string>
     <string name="habit_image">Фотография привычки</string>
